@@ -28,6 +28,10 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "test": "NODE_ENV=test jest"
+    "test:clear-tables": "node scripts/clear-tables.js",
+    "test:reset-tables": "npm run test:clear-tables && npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate",
+    "test": "npm run test:reset-tables && jest --runInBand",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   }
 }
