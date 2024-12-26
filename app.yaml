@@ -11,7 +11,7 @@ automatic_scaling:
   max_instances: 5
 
 handlers:
-  - url: /.*
+  - url: /api/.*
     script: auto
 
 entrypoint: node src/server.js

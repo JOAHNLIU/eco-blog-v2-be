@@ -25,7 +25,7 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
-app.get('/posts/:id', verifyToken, async (req, res) => {
+app.get('/api/posts/:id', verifyToken, async (req, res) => {
   try {
     const postId = req.params.id;
     const userId = req.userId;
@@ -38,7 +38,7 @@ app.get('/posts/:id', verifyToken, async (req, res) => {
   }
 });
 
-app.post('/posts', async (req, res) => {
+app.post('/api/posts', async (req, res) => {
   const { title, text } = req.body;
   if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -50,7 +50,7 @@ app.post('/posts', async (req, res) => {
   }
 });
 
-app.post('/posts/:id/like', async (req, res) => {
+app.post('/api/posts/:id/like', async (req, res) => {
   if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
@@ -61,7 +61,7 @@ app.post('/posts/:id/like', async (req, res) => {
   }
 });
 
-app.get('/posts/:id/comments', async (req, res) => {
+app.get('/api/posts/:id/comments', async (req, res) => {
   try {
     const comments = await storage.getComments(req.params.id, req.userId);
     res.json(comments);
@@ -70,7 +70,7 @@ app.get('/posts/:id/comments', async (req, res) => {
   }
 });
 
-app.post('/posts/:id/comments', async (req, res) => {
+app.post('/api/posts/:id/comments', async (req, res) => {
   if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
@@ -85,7 +85,7 @@ app.post('/posts/:id/comments', async (req, res) => {
   }
 });
 
-app.post('/posts/:postId/comments/:commentId/like', async (req, res) => {
+app.post('/api/posts/:postId/comments/:commentId/like', async (req, res) => {
   if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
 
   try {
