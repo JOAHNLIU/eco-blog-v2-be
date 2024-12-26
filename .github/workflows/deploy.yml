@@ -48,6 +48,10 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
+      - name: Encode FIREBASE_CONFIG
+        id: encode_firebase_config
+        run: echo "${{ secrets.FIREBASE_CONFIG }}" | base64 -w 0
+
       - name: Deploy to App Engine
         uses: google-github-actions/deploy-appengine@v1
         with:
@@ -59,3 +63,4 @@ jobs:
             POSTGRES_USER=${{ secrets.POSTGRES_USER }},
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }},
             POSTGRES_DB=${{ secrets.POSTGRES_DB }},
+            FIREBASE_CONFIG=${{ steps.encode_firebase_config.outputs.stdout }}
