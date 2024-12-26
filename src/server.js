@@ -8,12 +8,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(verifyToken);
-app.use((req, res, next) => {
-  if (req.headers['x-forwarded-proto'] !== 'https') {
-    return res.redirect(`https://${req.hostname}${req.url}`);
-  }
-  next();
-});
 
 app.get('/api/posts', async (req, res) => {
   const { query = '', sort = 'date', page = 1, limit = 5 } = req.query;

@@ -1,6 +1,6 @@
 const request = require('supertest');
-const app = require('../src/server'); // Ваш Express сервер
-const db = require('../src/models'); // Підключення до бази даних
+const app = require('../src/server');
+const db = require('../src/models');
 
 jest.mock('firebase-admin', () => ({
   auth: jest.fn(() => ({
