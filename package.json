@@ -27,7 +27,7 @@
     ]
   },
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install; fi",
     "test:clear-tables": "node scripts/clear-tables.js",
     "test:reset-tables": "npm run test:clear-tables && npx sequelize-cli db:migrate:undo:all --config src/config/config.js --migrations-path src/migrations && npx sequelize-cli db:migrate --config src/config/config.js --migrations-path src/migrations",
     "test": "npm run test:reset-tables && jest --runInBand",
