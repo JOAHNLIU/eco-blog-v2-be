@@ -54,6 +54,9 @@ jobs:
             gcloud app create --project=${{ secrets.APP_ENGINE_PROJECT }} --region=us-central
           fi
 
+      - name: Set working directory
+        run: cd src && ln -s ../app.yaml .
+
       - name: Deploy to App Engine
         uses: google-github-actions/deploy-appengine@v1
         with:
@@ -65,4 +68,3 @@ jobs:
             POSTGRES_USER=${{ secrets.POSTGRES_USER }},
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }},
             POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-        working-directory: ./src
