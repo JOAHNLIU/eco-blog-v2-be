@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/eco_blog</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="eco-blog-db@34.44.69.136" uuid="e3929ced-fd53-4da4-a0a4-4a872218e880">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://34.44.69.136:5432/eco-blog-db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

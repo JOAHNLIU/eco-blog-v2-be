@@ -1,0 +1,33 @@
+name: Deploy to App Engine
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Deploy to App Engine
+        env:
+          GCP_PROJECT: ${{ secrets.APP_ENGINE_PROJECT }}
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        run: |
+          echo $GCP_SERVICE_ACCOUNT_KEY > ${HOME}/gcp-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
+          gcloud app deploy --project=$GCP_PROJECT --quiet
