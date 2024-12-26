@@ -102,7 +102,7 @@ app.post('/posts/:postId/comments/:commentId/like', async (req, res) => {
 module.exports = app;
 
 if (require.main === module) {
-  const PORT = 3000;
+  const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
