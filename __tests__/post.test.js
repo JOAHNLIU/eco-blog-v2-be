@@ -20,21 +20,18 @@ jest.mock('firebase-admin', () => ({
 
 describe('Integration Tests for Posts and Likes', () => {
   beforeEach(async () => {
-    // Очистити базу даних перед кожним тестом
     await db.Like.destroy({ where: {} });
     await db.Post.destroy({ where: {} });
     await db.User.destroy({ where: { email: 'testuser@example.com' } });
   });
 
   afterAll(async () => {
-    // Закриваємо підключення до бази даних після всіх тестів
     await db.sequelize.close();
   });
 
   it('should create a new post', async () => {
-    // Запит на створення посту
     const response = await request(app)
-      .post('/posts')
+      .post('/api/posts')
       .set('Authorization', 'Bearer valid-token')
       .send({
         title: 'Integration Test Post',
@@ -50,9 +47,8 @@ describe('Integration Tests for Posts and Likes', () => {
   });
 
   it('should like the post', async () => {
-    // Створюємо пост
     const postResponse = await request(app)
-      .post('/posts')
+      .post('/api/posts')
       .set('Authorization', 'Bearer valid-token')
       .send({
         title: 'Post to Like',
@@ -61,9 +57,8 @@ describe('Integration Tests for Posts and Likes', () => {
 
     const postId = postResponse.body.id;
 
-    // Лайкаємо пост
     const likeResponse = await request(app)
-      .post(`/posts/${postId}/like`)
+      .post(`/api/posts/${postId}/like`)
       .set('Authorization', 'Bearer valid-token')
       .send();
 
@@ -73,9 +68,8 @@ describe('Integration Tests for Posts and Likes', () => {
   });
 
   it('should dislike the post', async () => {
-    // Створюємо пост
     const postResponse = await request(app)
-      .post('/posts')
+      .post('/api/posts')
       .set('Authorization', 'Bearer valid-token')
       .send({
         title: 'Post to Dislike',
@@ -84,15 +78,13 @@ describe('Integration Tests for Posts and Likes', () => {
 
     const postId = postResponse.body.id;
 
-    // Лайкаємо пост
     await request(app)
-      .post(`/posts/${postId}/like`)
+      .post(`/api/posts/${postId}/like`)
       .set('Authorization', 'Bearer valid-token')
       .send();
 
-    // Дизлайкаємо пост
     const dislikeResponse = await request(app)
-      .post(`/posts/${postId}/like`)
+      .post(`/api/posts/${postId}/like`)
       .set('Authorization', 'Bearer valid-token')
       .send();
 
