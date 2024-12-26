@@ -1,17 +1,67 @@
-runtime: nodejs16
+name: Deploy to App Engine
 
-env_variables:
-  NODE_ENV: "production"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-instance_class: F2
-automatic_scaling:
-  target_cpu_utilization: 0.65
-  target_throughput_utilization: 0.7
-  min_instances: 1
-  max_instances: 5
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-handlers:
-  - url: /.*
-    script: auto
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-entrypoint: node src/server.js
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.TEST_POSTGRES_DB }}
+        run: npm test
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && success()
+    needs: test-and-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Ensure App Engine is initialized
+        run: |
+          if ! gcloud app describe --project=${{ secrets.APP_ENGINE_PROJECT }}; then
+            gcloud app create --project=${{ secrets.APP_ENGINE_PROJECT }} --region=us-central
+          fi
+
+      - name: Deploy to App Engine
+        uses: google-github-actions/deploy-appengine@v1
+        with:
+          project_id: ${{ secrets.APP_ENGINE_PROJECT }}
+          deliverables: app.yaml
+          env_vars: |
+            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }},
+            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }},
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }},
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }},
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }},
