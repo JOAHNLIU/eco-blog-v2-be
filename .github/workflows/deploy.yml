@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  deploy:
+  test-and-lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,14 +23,45 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Lint code
+      - name: Run lint
         run: npm run lint
 
-      - name: Deploy to App Engine
+      - name: Run tests
         env:
-          GCP_PROJECT: ${{ secrets.APP_ENGINE_PROJECT }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.TEST_POSTGRES_DB }}
+        run: npm test
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && success()
+    needs: test-and-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Authenticate to GCP
+        env:
           GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
           echo $GCP_SERVICE_ACCOUNT_KEY > ${HOME}/gcp-key.json
           gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
-          gcloud app deploy --project=$GCP_PROJECT --quiet
+
+      - name: Set GCP Project
+        env:
+          GCP_PROJECT: ${{ secrets.APP_ENGINE_PROJECT }}
+        run: gcloud config set project $GCP_PROJECT
+
+      - name: Deploy to App Engine
+        run: gcloud app deploy --quiet
