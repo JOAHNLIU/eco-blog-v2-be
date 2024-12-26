@@ -20,7 +20,6 @@ module.exports = (sequelize) => {
     },
   });
 
-  // Associations
   CommentLikes.associate = (models) => {
     CommentLikes.belongsTo(models.Comment, {
       foreignKey: 'commentId',
