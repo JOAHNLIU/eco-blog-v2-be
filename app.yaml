@@ -14,4 +14,4 @@ handlers:
   - url: /.*
     script: auto
 
-entrypoint: node --inspect src/server.js
+entrypoint: node server.js
