@@ -48,6 +48,12 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
+      - name: Ensure App Engine is initialized
+        run: |
+          if ! gcloud app describe --project=${{ secrets.APP_ENGINE_PROJECT }}; then
+            gcloud app create --project=${{ secrets.APP_ENGINE_PROJECT }} --region=us-central
+          fi
+
       - name: Deploy to App Engine
         uses: google-github-actions/deploy-appengine@v1
         with:
