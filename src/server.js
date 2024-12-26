@@ -9,7 +9,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(verifyToken);
 
-// Routes
 app.get('/api/posts', async (req, res) => {
   const { query = '', sort = 'date', page = 1, limit = 5 } = req.query;
   try {
@@ -100,7 +99,11 @@ app.post('/posts/:postId/comments/:commentId/like', async (req, res) => {
   }
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+module.exports = app;
+
+if (require.main === module) {
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
