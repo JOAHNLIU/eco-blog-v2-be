@@ -1,15 +1,21 @@
 const { sequelize } = require('../src/models');
 
 async function clearTables() {
-  const queryInterface = sequelize.getQueryInterface();
   try {
-    console.log('Clearing all tables...');
-    await queryInterface.dropAllTables();
-    console.log('All tables cleared.');
+    const queryInterface = sequelize.getQueryInterface();
+
+    const tables = await queryInterface.showAllTables();
+
+    for (const table of tables) {
+      console.log(`Dropping table if exists: ${table}`);
+      await queryInterface.dropTable(table, { cascade: true });
+    }
+
+    console.log('All tables dropped successfully.');
+    process.exit(0);
   } catch (error) {
     console.error('Error clearing tables:', error);
-  } finally {
-    await sequelize.close();
+    process.exit(1);
   }
 }
 
