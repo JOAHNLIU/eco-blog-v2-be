@@ -43,39 +43,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-
       - name: Authenticate to GCP
-        env:
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        run: |
-          echo $GCP_SERVICE_ACCOUNT_KEY > ${HOME}/gcp-key.json
-          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
-
-      - name: Set GCP Project
-        env:
-          GCP_PROJECT: ${{ secrets.APP_ENGINE_PROJECT }}
-        run: gcloud config set project $GCP_PROJECT
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
       - name: Deploy to App Engine
-        env:
-          GCP_PROJECT: ${{ secrets.APP_ENGINE_PROJECT }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        run: |
-          echo $GCP_SERVICE_ACCOUNT_KEY > ${HOME}/gcp-key.json
-          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
-          gcloud config set project $GCP_PROJECT
-          gcloud app deploy --quiet --project=$GCP_PROJECT \
-            --update-env-vars POSTGRES_HOST=$POSTGRES_HOST,POSTGRES_PORT=$POSTGRES_PORT,POSTGRES_USER=$POSTGRES_USER,POSTGRES_PASSWORD=$POSTGRES_PASSWORD,POSTGRES_DB=$POSTGRES_DB,FIREBASE_CONFIG=$FIREBASE_CONFIG
+        uses: google-github-actions/deploy-appengine@v1
+        with:
+          project_id: ${{ secrets.APP_ENGINE_PROJECT }}
+          deliverables: app.yaml
+          env_vars: |
+            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }},
+            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }},
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }},
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }},
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }},
+            FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}
