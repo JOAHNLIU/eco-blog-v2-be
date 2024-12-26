@@ -1,23 +1,45 @@
 const admin = require('./firebase');
+const db = require('./models');
 
-const verifyToken = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
+async function verifyToken(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  const isOptional = req.method === 'GET';
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    req.userId = null;
-    return next();
+  if (!token) {
+    if (isOptional) {
+      req.userId = null;
+      return next();
+    }
+    return res.status(401).json({ error: 'Token not provided' });
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     req.userId = decodedToken.uid;
-    next();
+
+    const [user] = await db.User.findOrCreate({
+      where: { id: decodedToken.uid },
+      defaults: {
+        name: decodedToken.name || 'Anonymous',
+        email: decodedToken.email || null,
+        lastLoginAt: new Date(),
+      },
+    });
+
+    if (user) {
+      await user.update({ lastLoginAt: new Date() });
+    }
   } catch (error) {
     console.error('Token verification failed:', error);
-    return res.status(401).json({ error: 'Unauthorized' });
+
+    if (!isOptional) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    req.userId = null;
   }
-};
+
+  next();
+}
 
 module.exports = verifyToken;
