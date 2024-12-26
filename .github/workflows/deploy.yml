@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: Set working directory
-        run: cd src && ln -s ../app.yaml .
+        run: cd src && ln -s ../backend.yaml .
 
       - name: Deploy Backend Service
         uses: google-github-actions/deploy-appengine@v1
