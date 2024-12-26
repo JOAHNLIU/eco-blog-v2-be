@@ -57,11 +57,11 @@ jobs:
       - name: Set working directory
         run: cd src && ln -s ../app.yaml .
 
-      - name: Deploy to App Engine
+      - name: Deploy Backend Service
         uses: google-github-actions/deploy-appengine@v1
         with:
           project_id: ${{ secrets.APP_ENGINE_PROJECT }}
-          deliverables: app.yaml
+          deliverables: backend.yaml
           env_vars: |
             POSTGRES_HOST=${{ secrets.POSTGRES_HOST }},
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }},
