@@ -1,10 +1,10 @@
 # eco-blog
 
 # Основні посилання
-https://github.com/JOAHNLIU/eco-blog-v2-be
-https://github.com/JOAHNLIU/eco-blog-v2-fe
-https://github.com/JOAHNLIU/eco-blog-v2-auth
-https://eco-blog-edu.org.ua/
+* https://github.com/JOAHNLIU/eco-blog-v2-be
+* https://github.com/JOAHNLIU/eco-blog-v2-fe
+* https://github.com/JOAHNLIU/eco-blog-v2-auth
+* https://eco-blog-edu.org.ua/
 
 **Коментар:**
 Проект було виконано по патерну "Оптімістік ЮАЙ", коли кліент додає пости чи лайки, сподіваючись що сервер все в базі оновив правильно (виходячи зі статусу записів)
