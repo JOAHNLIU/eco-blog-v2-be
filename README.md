@@ -1,6 +1,6 @@
 # eco-blog
 
-# Основні посилання
+## Основні посилання
 * https://github.com/JOAHNLIU/eco-blog-v2-be
 * https://github.com/JOAHNLIU/eco-blog-v2-fe
 * https://github.com/JOAHNLIU/eco-blog-v2-auth
@@ -134,6 +134,9 @@ https://github.com/JOAHNLIU/eco-blog-v2-be/tree/7b27123cc5274df7d8eea52af71d1dea
 
 ## Lab 6 
 Тестування було імплементовано на базі JEST
+Тести виконуються як інтеграційні
+Було замокано авторизацію, і підкидається тестова база ( кожен раз дропаються дані і перенакатуються міграції)
+
 ![coverage.jpg](readme_static%2Fcoverage.jpg)
 
 ## Lab 7
