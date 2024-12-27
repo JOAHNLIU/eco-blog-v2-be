@@ -8,13 +8,12 @@ const { initializeFirebase, verifyTokenMiddleware } = require('eco-blog-v2-auth'
 
 const app = express();
 
-initializeFirebase(process.env.FIREBASE_CONFIG);
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(verifyTokenMiddleware());
 
 if (process.env.NODE_ENV !== 'test') {
+  initializeFirebase(process.env.FIREBASE_CONFIG);
   app.use((req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
       return res.redirect(`https://${req.hostname}${req.url}`);
@@ -22,6 +21,8 @@ if (process.env.NODE_ENV !== 'test') {
     next();
   });
 }
+
+app.use(verifyTokenMiddleware());
 
 app.get('/api/posts', async (req, res) => {
   const { query = '', sort = 'date', page = 1, limit = 5 } = req.query;
