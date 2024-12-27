@@ -2,21 +2,6 @@ const request = require('supertest');
 const app = require('../src/server');
 const db = require('../src/models');
 
-jest.mock('firebase-admin', () => ({
-  auth: jest.fn(() => ({
-    verifyIdToken: jest.fn((token) => {
-      if (token === 'valid-token') {
-        return Promise.resolve({ uid: 'test-user-id' });
-      } else {
-        return Promise.reject(new Error('Invalid token'));
-      }
-    }),
-  })),
-  credential: {
-    cert: jest.fn(),
-  },
-  initializeApp: jest.fn(),
-}));
 
 describe('Integration Tests for Posts and Likes', () => {
   beforeEach(async () => {

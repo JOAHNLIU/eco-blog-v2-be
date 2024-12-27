@@ -22,7 +22,7 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-app.use(verifyTokenMiddleware());
+app.use(verifyTokenMiddleware({ findOrCreateUser: storage.findOrCreateUser.bind(storage) }));
 
 app.get('/api/posts', async (req, res) => {
   const { query = '', sort = 'date', page = 1, limit = 5 } = req.query;
@@ -40,7 +40,7 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
-app.get('/api/posts/:id', verifyToken, async (req, res) => {
+app.get('/api/posts/:id', async (req, res) => {
   try {
     const postId = req.params.id;
     const userId = req.userId;
@@ -61,6 +61,7 @@ app.post('/api/posts', async (req, res) => {
     const post = await storage.createPost(req.userId, title, text);
     res.status(201).json(post);
   } catch (error) {
+    console.error('Error creating post:', error);
     res.status(500).json({ error: error.message });
   }
 });

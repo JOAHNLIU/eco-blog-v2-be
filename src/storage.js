@@ -2,6 +2,21 @@ const { Op } = require('sequelize');
 const { User, Post, Comment, Like, CommentLikes } = require('./models');
 
 class Storage {
+  async findOrCreateUser(decodedToken) {
+    const [user] = await User.findOrCreate({
+      where: { id: decodedToken.uid },
+      defaults: {
+        name: decodedToken.name || 'Anonymous',
+        email: decodedToken.email || null,
+        lastLoginAt: new Date(),
+      },
+    });
+
+    if (user) {
+      await user.update({ lastLoginAt: new Date() });
+    }
+  }
+
   formatPost(post, userId) {
     return {
       id: post.id,
