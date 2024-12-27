@@ -1,6 +1,6 @@
 # eco-blog
 
-# Основні посилання
+## Основні посилання
 * https://github.com/JOAHNLIU/eco-blog-v2-be
 * https://github.com/JOAHNLIU/eco-blog-v2-fe
 * https://github.com/JOAHNLIU/eco-blog-v2-auth
