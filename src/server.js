@@ -2,12 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const storage = require('./storage');
-const verifyToken = require('./authMiddleware');
+const { initializeFirebase, verifyTokenMiddleware } = require('eco-blog-v2-auth');
+
+
 
 const app = express();
+
+initializeFirebase(process.env.FIREBASE_CONFIG);
+
 app.use(cors());
 app.use(bodyParser.json());
-app.use(verifyToken);
+app.use(verifyTokenMiddleware());
+
 if (process.env.NODE_ENV !== 'test') {
   app.use((req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
@@ -33,7 +39,7 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
-app.get('/api/posts/:id', verifyToken, async (req, res) => {
+app.get('/api/posts/:id', async (req, res) => {
   try {
     const postId = req.params.id;
     const userId = req.userId;
