@@ -40,7 +40,7 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
-app.get('/api/posts/:id', async (req, res) => {
+app.get('/api/posts/:id', verifyToken, async (req, res) => {
   try {
     const postId = req.params.id;
     const userId = req.userId;
